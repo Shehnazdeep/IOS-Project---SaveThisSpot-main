@@ -2,12 +2,21 @@
 //  HomeView.swift
 //  SaveThisSpot
 //
-//  Created by Shehnazdeep Kaur on 2023-11-15.
+// Group 8
+// Zubear Nassimi id# 991 628 529
+// Shehnazdeep Kaur id# 991 539 256
 //
 
 import SwiftUI
+import FirebaseAuth
 
-struct HomeView: View {
+struct MainView: View {
+    
+    @Binding var rootView : RootView
+    
+    @EnvironmentObject var dbHelper : FireDBHelper
+    @EnvironmentObject var locationHelper: LocationHelper
+    
     var body: some View {
         
         VStack{
@@ -21,50 +30,42 @@ struct HomeView: View {
                 
                     .foregroundColor(.red)
                     .font(.system(size: 38))
-                
             }
         .padding(.vertical,32)
             
             TabView{
-                SaveCurrentSpotView().tabItem{
+                SaveCurrentSpotView(rootView: self.$rootView).tabItem{
                     Image(systemName: "pin.square")
                     Text("Save location")
                 }
                 
-                SaveRemoteSpotView().tabItem{
-                    Image(systemName: "plus.app")
-                    Text("Add location")
-                }
                 
-                FavouriteSpotsView().tabItem{
+                FavouriteSpotsView(rootView: self.$rootView).tabItem{
                     Image(systemName: "heart")
                     Text("Favourites")
                 }
             }//TabView
-            
         }//vstack
         .toolbar{
             ToolbarItem(placement: .navigationBarTrailing){
-                
-                NavigationLink(){
-                    
-                   
-                    
-                    
-                }label:{
-                    Image(systemName: "arrowshape.turn.up.right.circle.fill")
-                     
-                    
+                Button{
+                 self.logout()
+                  
+                }label: {
+                    Image(systemName: "arrow.right.square")
                 }
-                .foregroundColor(.brown)
-               
-                
-            }
+            }//ToolbarItem
         }
-       
     }//body
+    
+    private func logout(){
+        do{
+            try Auth.auth().signOut()
+            
+            self.rootView = .login
+        }catch let err as NSError{
+            print(#function, "Unable to sign out : \(err)")
+        }
+    }
+    
 }//struct
-
-#Preview {
-    HomeView()
-}
